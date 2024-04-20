@@ -1,0 +1,33 @@
+create database if not exists salesdatawallmart;
+ create table if not exists sales(
+invoice_id varchar(30) NOT NULL PRIMARY KEY,
+branch varchar(5),
+city varchar(30),
+customer_type varchar(30) NOT NULL,
+gender varchar(10) NOT NULL, 
+product_line varchar(100) NOT NULL, 
+unit_price decimal(10,2) NOT NULL,
+quantity int NOT NULL, 
+vat float(6,4) NOT NULL,
+total decimal(12,4) NOT NULL,
+dat_e datetime NOT NULL, 
+tim_e time NOT NULL,
+payment_method varchar(15) NOT NULL,  
+cogs decimal(10) NOT NULL,
+gross_margin_pct float(11,9) NOT NULL, 
+gross_income decimal (12, 4) NOT NULL, 
+rating float(2,1)
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
