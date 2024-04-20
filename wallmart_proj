@@ -1,0 +1,266 @@
+SELECT * FROM salesdatawallmart.sales;
+-- inserting new column for morning evening and after noon as a feature engineering
+-- FEATURE ENGINEERING
+select tim_e,
+(case
+	when tim_e between "00:00:00" and "12:00:00" THEN "Morning"
+    when tim_e between "12:01:00" and "16:00:00" THEN "Afternoon"
+    Else "Evening"
+end
+) As time_of_date
+from salesdatawallmart.sales;
+
+Alter table sales add column time_of_day varchar(20);
+SELECT * FROM salesdatawallmart.sales;
+Update sales set time_of_day = (
+case
+	when tim_e between "00:00:00" and "12:00:00" THEN "Morning"
+    when tim_e between "12:01:00" and "16:00:00" THEN "Afternoon"
+    Else "Evening"
+end); 
+SELECT * FROM salesdatawallmart.sales;
+-- if you receive an error go to edit and go to preference; in preferences go to sql editor in sql editor go down and untick safe update
+-- then go to query and click on reconnect the server and then proceed to run the same code
+
+
+
+-- -- adding day_name column to give insight of sales that contains the extracted days of the week whcih day the transaction took place
+select dat_e,
+dayname(dat_e)
+ from sales;
+alter table sales add column day_name varchar(10);
+SELECT * FROM salesdatawallmart.sales;
+Update sales set day_name = dayname(dat_e);
+
+SELECT * FROM salesdatawallmart.sales; 
+-- -----
+-- month_name addition
+ alter table sales add column month_name varchar(10);
+SELECT * FROM salesdatawallmart.sales;
+Update sales set month_name = monthname(dat_e);
+
+SELECT * FROM salesdatawallmart.sales; 
+
+-- ----------
+
+-- time for exploratory data analysis; 
+-- generic questions---
+-- how many unique cities the data have?
+select distinct (city) from sales;
+-- in which city is each branch?
+select distinct (branch) from sales ;
+select distinct city, branch from sales;
+-- product questions--
+--  how many product lines does the data have?--
+select count(distinct product_line) from sales;
+
+-- most common payment method--
+select  payment_method, 
+	    count(payment_method) as cnt 
+from sales 
+group by payment_method 
+order by cnt desc;
+-- do not use max(payment_method)
+-- what is most selling product line?
+
+select 
+product_line,
+count(product_line) as pnt 
+from sales
+group by product_line
+order by pnt desc; 
+
+-- total revenue by month 
+select 
+month_name,
+sum(total) as total_revenue
+from sales
+group by month_name
+order by total_revenue desc; 
+
+-- - what month had the largest cogs? --
+select 
+month_name, 
+sum(cogs) as cogs
+from sales
+group by month_name
+order by cogs desc;
+-- what product line has the largest revenue/
+
+select
+product_line, 
+sum(total) as total
+from sales
+group by product_line
+order by total desc;
+
+-- what is the city with the largest revenue?
+select 
+city,
+sum(total) as total
+from sales
+group by city
+order by total desc;
+
+-- what product line has the largest vat?
+
+select
+product_line,
+avg(vat) as avg_vat
+from sales
+group by product_line
+order by avg_vat desc;
+
+--  fetch each product line and add column to those product line showing good and bad. good if its freater than average sales;
+select
+product_line
+from sales;
+
+-- which branch sold more products than average product sold?
+
+select
+branch,
+sum(quantity) as qty
+from sales
+group by branch
+having sum(quantity)>(select avg(quantity) from sales);
+-- most product line by gender
+select
+gender,
+product_line,
+count(gender) as total_gend
+from sales
+group by gender, product_line
+order by total_gend desc;
+
+-- average rateing of each product line
+select
+product_line,
+avg(rating) as avr
+from sales
+group by product_line
+order by avr desc;
+-- sales questions----
+-- number of sales made in each time of the day per weekday
+select
+time_of_day,
+count(*) as total_sales
+from sales
+where day_name ="Monday" 
+group by time_of_day
+order by total_sales desc;
+
+-- whic of the customer type most revenue
+
+select
+customer_type,
+sum(total) as rev
+
+from sales
+group by customer_type
+order by rev desc;
+
+-- which city as has the largest value added tax; 
+
+select 
+city,
+avg(vat) as mvat
+from sales
+group by city
+order by mvat desc;
+
+-- customer questions -- 
+-- how many unique customer types does the data have?
+select
+count(distinct customer_type)
+from sales;
+-- how many unique payment methods
+select
+count(distinct payment_method)
+from sales; 
+-- which customer type buys the most
+select
+customer_type,
+count(*) as ct_cnt
+from sales
+group by customer_type;
+
+-- what is the gender of the most customers?
+select
+gender,
+
+count(gender) as genct
+
+
+from sales
+group by gender
+order by genct desc;
+-- what is the gender distribution per branch
+select
+gender,
+count(gender) as gect
+
+from  sales
+where branch="A"
+group by gender
+order by gect desc; 
+
+-- which time of the day customer give most ratings?
+select
+time_of_day, 
+count(rating) as avg_r
+from sales group by time_of_day order by avg_r desc;
+
+-- which time of the day per branch most rating?
+
+select
+time_of_day, 
+count(rating) as avg_r
+from sales where branch = "B" group by time_of_day order by avg_r desc;
+
+-- which day of the week has the best avg ratings?
+
+select
+day_name,
+avg(rating) as avr
+from sales
+group by day_name
+order by avr desc;
+
+--
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
